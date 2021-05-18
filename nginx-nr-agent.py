@@ -6,10 +6,11 @@
 
 import logging, logging.config
 import os, re, sys, ConfigParser
+import configparser
 import json
 import base64
 from time import sleep, time
-from urllib2 import Request, urlopen, URLError, HTTPError
+from urllib3 import Request, urlopen, URLError, HTTPError
 from daemon import runner
 import traceback
 

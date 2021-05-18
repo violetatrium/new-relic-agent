@@ -67,7 +67,7 @@ class NginxApiCollector(object):
             return resp
         try:
             js = json.loads(resp.read())
-        except ValueError, e:
+        except ValueError:
             LOG.error("could not parse JSON from new api body: '%s'", resp.read())
             return None
         return js
@@ -464,7 +464,7 @@ class NginxNewRelicAgent():
 
         try:
             js = json.loads(response_body)
-        except ValueError, e:
+        except ValueError:
             LOG.error("could not parse JSON from response body: '%s'", response_body)
             return False
 
@@ -545,18 +545,18 @@ class MyDaemonRunner(runner.DaemonRunner):
 
         runner.DaemonRunner.__init__(self, app)
 
-        self.daemon_context.umask = 0022
+        self.daemon_context.umask = 0o0022
         self.action_funcs['configtest'] = MyDaemonRunner._configtest
 
     def _configtest(self):
         self._app.configtest()
 
     def show_usage(self, rc):
-        print "usage: %s [options] action" % sys.argv[0]
-        print "valid actions: start, stop, configtest"
-        print " -c, --config       path to configuration file"
-        print " -p, --pidfile      path to pidfile"
-        print " -f, --foreground   do not detach from terminal"
+        print("usage: %s [options] action" % sys.argv[0])
+        print("valid actions: start, stop, configtest")
+        print(" -c, --config       path to configuration file")
+        print(" -p, --pidfile      path to pidfile")
+        print(" -f, --foreground   do not detach from terminal")
         sys.exit(rc)
 
     def parse_args(self, argv=None):
@@ -568,7 +568,7 @@ class MyDaemonRunner(runner.DaemonRunner):
         try:
             opts, args = getopt.getopt(sys.argv[1:], 'c:p:f', ['config=', 'pidfile=', 'foreground'])
         except getopt.GetoptError as e:
-            print "Error: %s" % str(e)
+            print("Error: %s" % str(e))
             sys.exit(1)
 
         if len(args) == 0:
@@ -576,7 +576,7 @@ class MyDaemonRunner(runner.DaemonRunner):
 
         self.action = args[0]
         if self.action not in ('start', 'stop', 'configtest'):
-            print "Invalid action: %s" % self.action
+            print("Invalid action: %s" % self.action)
             self.show_usage(1)
 
         for opt, arg in opts:
@@ -593,7 +593,7 @@ class MyDaemonRunner(runner.DaemonRunner):
                 self._app.foreground = True
 
             else:
-                print "Could not parse option: %s" % opt
+                print("Could not parse option: %s" % opt)
                 self.show_usage(1)
 
 def getLogFileHandles(logger):
@@ -615,13 +615,13 @@ def main():
         pass
 
     if not os.path.isfile(app.config_file) or not os.access(app.config_file, os.R_OK):
-        print "Config file %s could not be found or opened." % app.config_file
+        print("Config file %s could not be found or opened." % app.config_file)
         sys.exit(1)
 
     try:
         logging.config.fileConfig(app.config_file, None, False)
-    except Exception, e:
-        print "Error while configuring logging: %s" % e
+    except Exception as e:
+        print("Error while configuring logging: %s" % e)
         sys.exit(1)
 
     if not app.foreground:
